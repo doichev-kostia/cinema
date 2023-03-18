@@ -1,0 +1,193 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum SeatType {
+  standard
+  premium
+  luxury
+}
+
+enum RoleType {
+  admin
+  customer
+}
+
+model Address {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  country   String
+  city      String
+  street    String
+  house     String
+  index     String
+  Cinema    Cinema[]
+}
+
+model Cinema {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String
+  phone     String
+  email     String
+
+  addressId String  @db.Uuid
+  address   Address @relation(fields: [addressId], references: [id])
+  Room      Room[]
+}
+
+model Room {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String
+
+  cinemaId String  @db.Uuid
+  cinema   Cinema  @relation(fields: [cinemaId], references: [id])
+  seats    Seat[]
+  Event    Event[]
+}
+
+model Seat {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  type      SeatType
+  row       Int      @db.SmallInt
+  number    Int      @db.SmallInt
+
+  roomId String   @db.Uuid
+  room   Room     @relation(fields: [roomId], references: [id])
+  Ticket Ticket[]
+}
+
+model Movie {
+  id          String   @id @default(uuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  title       String
+  description String   @db.Text
+  // in minutes
+  duration    Int      @db.SmallInt
+  releaseDate DateTime @db.Date
+  // 0 - 100
+  rating      Int      @db.SmallInt
+  genres      String   @db.Text
+  directors   String   @db.Text
+  actors      String   @db.Text
+  posterUrl   String
+
+  prices Price[]
+  events Event[]
+}
+
+model Price {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  seatType  SeatType
+  value     Int
+  // ISO 4217 currency code
+  currency  String   @db.VarChar(3)
+
+  movieId String @db.Uuid
+  movie   Movie  @relation(fields: [movieId], references: [id])
+}
+
+model Event {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  startsAt  DateTime
+  endsAt    DateTime
+
+  movieId String   @db.Uuid
+  movie   Movie    @relation(fields: [movieId], references: [id])
+  roomId  String   @db.Uuid
+  room    Room     @relation(fields: [roomId], references: [id])
+  tickets Ticket[]
+}
+
+model Ticket {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  // price in cents
+  price     Int
+
+  eventId   String      @db.Uuid
+  event     Event       @relation(fields: [eventId], references: [id])
+  seatId    String      @db.Uuid
+  seat      Seat        @relation(fields: [seatId], references: [id])
+  OrderItem OrderItem[]
+}
+
+model Product {
+  id        String      @id @default(uuid())
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  name      String
+  // price in cents
+  price     Int
+  OrderItem OrderItem[]
+}
+
+model User {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  firstName String
+  lastName  String
+  phone     String
+  email     String   @unique
+  password  String
+  Role      Role[]
+}
+
+model Role {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  type      RoleType
+
+  userId String
+  user   User    @relation(fields: [userId], references: [id])
+  Order  Order[]
+}
+
+model Order {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  customerId String? @db.Uuid
+  customer   Role?   @relation(fields: [customerId], references: [id], onDelete: SetNull)
+
+  items OrderItem[]
+}
+
+model OrderItem {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  quantity  Int
+
+  orderId String @db.Uuid
+  order   Order  @relation(fields: [orderId], references: [id])
+
+  productId String?  @db.Uuid
+  product   Product? @relation(fields: [productId], references: [id])
+
+  ticketId String? @db.Uuid
+  ticket   Ticket? @relation(fields: [ticketId], references: [id])
+}
