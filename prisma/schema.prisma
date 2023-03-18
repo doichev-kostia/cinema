@@ -22,7 +22,7 @@ enum RoleType {
 }
 
 model Address {
-  id        String   @id @default(uuid())
+  id        String   @id @default(uuid()) @db.Uuid
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   country   String
@@ -34,7 +34,7 @@ model Address {
 }
 
 model Cinema {
-  id        String   @id @default(uuid())
+  id        String   @id @default(uuid()) @db.Uuid
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   name      String
@@ -47,7 +47,7 @@ model Cinema {
 }
 
 model Room {
-  id        String   @id @default(uuid())
+  id        String   @id @default(uuid()) @db.Uuid
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   name      String
@@ -59,7 +59,7 @@ model Room {
 }
 
 model Seat {
-  id        String   @id @default(uuid())
+  id        String   @id @default(uuid()) @db.Uuid
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   type      SeatType
@@ -72,7 +72,7 @@ model Seat {
 }
 
 model Movie {
-  id          String   @id @default(uuid())
+  id          String   @id @default(uuid()) @db.Uuid
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   title       String
@@ -92,7 +92,7 @@ model Movie {
 }
 
 model Price {
-  id        String   @id @default(uuid())
+  id        String   @id @default(uuid()) @db.Uuid
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   seatType  SeatType
@@ -105,7 +105,7 @@ model Price {
 }
 
 model Event {
-  id        String   @id @default(uuid())
+  id        String   @id @default(uuid()) @db.Uuid
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   startsAt  DateTime
@@ -119,7 +119,7 @@ model Event {
 }
 
 model Ticket {
-  id        String   @id @default(uuid())
+  id        String   @id @default(uuid()) @db.Uuid
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   // price in cents
@@ -133,7 +133,7 @@ model Ticket {
 }
 
 model Product {
-  id        String      @id @default(uuid())
+  id        String      @id @default(uuid()) @db.Uuid
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
   name      String
@@ -143,7 +143,7 @@ model Product {
 }
 
 model User {
-  id        String   @id @default(uuid())
+  id        String   @id @default(uuid()) @db.Uuid
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   firstName String
@@ -155,18 +155,18 @@ model User {
 }
 
 model Role {
-  id        String   @id @default(uuid())
+  id        String   @id @default(uuid()) @db.Uuid
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   type      RoleType
 
-  userId String
+  userId String  @db.Uuid
   user   User    @relation(fields: [userId], references: [id])
   Order  Order[]
 }
 
 model Order {
-  id        String   @id @default(uuid())
+  id        String   @id @default(uuid()) @db.Uuid
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -177,7 +177,7 @@ model Order {
 }
 
 model OrderItem {
-  id        String   @id @default(uuid())
+  id        String   @id @default(uuid()) @db.Uuid
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   quantity  Int
